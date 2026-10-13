@@ -1,5 +1,7 @@
 using FluentValidation;
 using MiA_Lr_3.Models;
+using MiA_Lr_3.Services;
+using MiA_Lr_3.Services.Interface;
 using MiA_Lr_3.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,9 +12,15 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-//Add validation services
+// Реєстрація валідаторів
 builder.Services.AddScoped<IValidator<Car>, CarValidator>();
 builder.Services.AddScoped<IValidator<CarContract>, ContractValidator>();
+
+
+// Реєстрація сервісів
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<ICarService, CarService>();
+builder.Services.AddScoped<ICarContractService, CarContractService>();
 
 var app = builder.Build();
 
