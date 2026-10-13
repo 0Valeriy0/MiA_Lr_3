@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-﻿namespace MiA_Lr_3.Models
-{
-    public class Client
-    {
-=======
-﻿
+
 using System.ComponentModel.DataAnnotations;
 
 namespace MiA_Lr_3.Models
@@ -32,6 +26,5 @@ namespace MiA_Lr_3.Models
 
         [Range(typeof(decimal), "0", "100000000", ErrorMessage = "Баланс має бути від 0 до 100000000")]
         public decimal Balance { get; set; }
->>>>>>> fea77db (Restore models and validators)
     }
 }
