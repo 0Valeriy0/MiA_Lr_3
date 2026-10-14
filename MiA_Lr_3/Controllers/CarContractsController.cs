@@ -1,7 +1,8 @@
 ﻿using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
 using MiA_Lr_3.Models;
+using MiA_Lr_3.Models.Enum;
 using MiA_Lr_3.Services.Interface;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MiA_Lr_3.Controllers
 {
@@ -94,5 +95,58 @@ namespace MiA_Lr_3.Controllers
 
             return NoContent();
         }
+
+
+        // POST: api/carcontracts/calculate-cost (Бізнес-задача 2)
+        [HttpPost("calculate-cost")]
+        public ActionResult<decimal> CalculateCost(decimal dailyRate, DateTime startDate, DateTime plannedEndDate, InsuranceType insurance)
+        {
+            try
+            {
+                var cost = _contractService.CalculateRentalCost(dailyRate, startDate, plannedEndDate, insurance);
+                return Ok(new { TotalCost = cost });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+        // POST: api/carcontracts/rent (Бізнес-задача 1)
+        [HttpPost("rent")]
+        public ActionResult<CarContract> RentCar(int clientId, int carId, DateTime plannedEndDate, InsuranceType insurance)
+        {
+            try
+            {
+                var contract = _contractService.CreateRental(clientId, carId, plannedEndDate, insurance);
+                return CreatedAtAction(nameof(GetById), new { id = contract.Id }, contract);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+        // POST: api/carcontracts/1/return (Бізнес-задача 3)
+        [HttpPost("{id:int}/return")]
+        public ActionResult<CarContract> ReturnCar(int id, int endMileage, decimal damageCost = 0)
+        {
+            try
+            {
+                var contract = _contractService.ReturnCar(id, endMileage, damageCost);
+                return Ok(contract);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
     }
 }

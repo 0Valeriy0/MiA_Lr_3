@@ -1,4 +1,19 @@
 [
-
-
+  {
+    "Id": 1,
+    "ClientId": 1,
+    "CarId": 1,
+    "StartDate": "2026-10-14T00:00:00+03:00",
+    "PlannedEndDate": "2026-10-21T00:00:00",
+    "ActualEndDate": "2026-10-14T00:00:00+03:00",
+    "Insurance": 1,
+    "Status": 1,
+    "DepositAmount": 10000,
+    "TotalCost": 6580.00,
+    "StartMileage": 718005,
+    "EndMileage": 718105,
+    "DamageCost": 0,
+    "ExtraMileageCharge": 0,
+    "DepositRefund": 10000
+  }
 ]

@@ -19,7 +19,7 @@ namespace MiA_Lr_3.Services.Interface
             DateTime plannedEndDate,
             InsuranceType insurance);
         // Розрахунок вартості
-        decimal CalculaateRentalCost(
+        decimal CalculateRentalCost(
             decimal daikyRate,
             DateTime startDate,
             DateTime plannedEdDate,
