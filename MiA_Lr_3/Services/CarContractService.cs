@@ -6,8 +6,7 @@ namespace MiA_Lr_3.Services
 {
     public class CarContractService : ICarContractService
     {
-        private readonly string filePath =
-            Path.Combine("Storage", "contracts.json");
+        private readonly string filePath =Path.Combine("Storage", "contracts.json");
 
         public CarContractService()
         {
