@@ -1,0 +1,22 @@
+[
+  {
+    "Id": 1,
+    "Brand": "Audi",
+    "Model": "100",
+    "RegistrationNumber": "BX1111HX",
+    "Class": 0,
+    "DailyRate": 600,
+    "CurrentMileage": 718105,
+    "IsAvailable": true
+  },
+  {
+    "Id": 2,
+    "Brand": "Mercedes",
+    "Model": "Maybach SL 680",
+    "RegistrationNumber": "AA7777KI",
+    "Class": 1,
+    "DailyRate": 5000,
+    "CurrentMileage": 25000,
+    "IsAvailable": true
+  }
+]
