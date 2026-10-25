@@ -11,28 +11,25 @@ namespace MiA_Lr_3.Controllers
     public class CarContractsController : ControllerBase
     {
         private readonly ICarContractService _contractService;
-        private readonly IValidator<CarContract> _contractValidator;
 
         public CarContractsController(
-            ICarContractService contractService,
-            IValidator<CarContract> contractValidator)
+            ICarContractService contractService)
         {
             _contractService = contractService;
-            _contractValidator = contractValidator;
         }
 
         // GET: api/carcontracts
         [HttpGet]
-        public ActionResult<List<CarContract>> GetAll()
+        public async Task<ActionResult<List<CarContract>>> GetAll()
         {
-            return Ok(_contractService.GetAll());
+            return Ok(await _contractService.GetAllAsync());
         }
 
-        // GET: api/carcontracts/1
-        [HttpGet("{id:int}")]
-        public ActionResult<CarContract> GetById(int id)
+        // GET: api/carcontracts/
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CarContract>> GetById(string id)
         {
-            var contract = _contractService.GetById(id);
+            var contract = await _contractService.GetByIdAsync(id);
 
             if (contract == null)
                 return NotFound();
@@ -42,55 +39,31 @@ namespace MiA_Lr_3.Controllers
 
         // POST: api/carcontracts
         [HttpPost]
-        public ActionResult<CarContract> Create(CarContract contract)
-        {
-            var validationResult = _contractValidator.Validate(contract);
+        public async Task<ActionResult<CarContract>> Create([FromBody]CarContract contract)
+        {   
 
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors.Select(
-                    error => new
-                    {
-                        error.PropertyName,
-                        error.ErrorMessage
-                    }));
-            }
 
-            var createdContract = _contractService.Create(contract);
+            var createdContract = await _contractService.CreateAsync(contract);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = createdContract.Id },
-                createdContract);
+            return CreatedAtAction( nameof(GetById),  new { id = createdContract.Id }, createdContract);
         }
 
-        // PUT: api/carcontracts/1
-        [HttpPut("{id:int}")]
-        public IActionResult Update(int id, CarContract contract)
-        {
-            var validationResult = _contractValidator.Validate(contract);
+        // PUT: api/carcontracts/
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, CarContract contract)
+        { 
 
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors.Select(
-                    error => new
-                    {
-                        error.PropertyName,
-                        error.ErrorMessage
-                    }));
-            }
-
-            if (!_contractService.Update(id, contract))
+            if (!await _contractService.UpdateAsync(id, contract))
                 return NotFound();
 
             return NoContent();
         }
 
-        // DELETE: api/carcontracts/1
-        [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
+        // DELETE: api/carcontracts/
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
         {
-            if (!_contractService.Delete(id))
+            if (!await _contractService.DeleteAsync(id))
                 return NotFound();
 
             return NoContent();
@@ -99,11 +72,11 @@ namespace MiA_Lr_3.Controllers
 
         // POST: api/carcontracts/calculate-cost (Бізнес-задача 2)
         [HttpPost("calculate-cost")]
-        public ActionResult<decimal> CalculateCost(decimal dailyRate, DateTime startDate, DateTime plannedEndDate, InsuranceType insurance)
+        public  ActionResult<decimal> CalculateCost(decimal dailyRate, DateTime startDate, DateTime plannedEndDate, InsuranceType insurance)
         {
             try
             {
-                var cost = _contractService.CalculateRentalCost(dailyRate, startDate, plannedEndDate, insurance);
+                var cost =  _contractService.CalculateRentalCost(dailyRate, startDate, plannedEndDate, insurance);
                 return Ok(new { TotalCost = cost });
             }
             catch (ArgumentException ex)
@@ -113,11 +86,11 @@ namespace MiA_Lr_3.Controllers
         }
         // POST: api/carcontracts/rent (Бізнес-задача 1)
         [HttpPost("rent")]
-        public ActionResult<CarContract> RentCar(int clientId, int carId, DateTime plannedEndDate, InsuranceType insurance)
+        public async Task<ActionResult<CarContract>> RentCar(string clientId, string carId, DateTime plannedEndDate, InsuranceType insurance)
         {
             try
             {
-                var contract = _contractService.CreateRental(clientId, carId, plannedEndDate, insurance);
+                var contract = await _contractService.CreateRentalAsync(clientId, carId, plannedEndDate, insurance);
                 return CreatedAtAction(nameof(GetById), new { id = contract.Id }, contract);
             }
             catch (ArgumentException ex)
@@ -131,11 +104,11 @@ namespace MiA_Lr_3.Controllers
         }
         // POST: api/carcontracts/1/return (Бізнес-задача 3)
         [HttpPost("{id:int}/return")]
-        public ActionResult<CarContract> ReturnCar(int id, int endMileage, decimal damageCost = 0)
+        public async Task<ActionResult<CarContract>> ReturnCar(string id, int endMileage, decimal damageCost = 0)
         {
             try
             {
-                var contract = _contractService.ReturnCar(id, endMileage, damageCost);
+                var contract = await _contractService.ReturnCarAsync(id, endMileage, damageCost);
                 return Ok(contract);
             }
             catch (ArgumentException ex)

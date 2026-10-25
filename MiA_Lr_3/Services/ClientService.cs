@@ -1,82 +1,31 @@
-﻿using System.Text.Json;
-using MiA_Lr_3.Models;
+﻿using MiA_Lr_3.Models;
+using MiA_Lr_3.Repositories.Interface;
 using MiA_Lr_3.Services.Interface;
 
 namespace MiA_Lr_3.Services
 {
     public class ClientService : IClientService
     {
-        private readonly string filePath =Path.Combine("Storage", "clients.json");
-        public ClientService()
-        {
-            if (!File.Exists(filePath))
-            {
-                Directory.CreateDirectory("Storage");
-                File.WriteAllText(filePath, "[]");
-            }
-        }
-        private List<Client> ReadClients()
-        {
-            string json = File.ReadAllText(filePath);
+        private readonly IClientRepository _clientRepository;
 
-            return JsonSerializer.Deserialize<List<Client>>(json)
-                   ?? new List<Client>();
-        }
-        private void WriteClients(List<Client> clients)
+        public ClientService(IClientRepository clientRepository)
         {
-            string json = JsonSerializer.Serialize(
-                clients,
-                new JsonSerializerOptions { WriteIndented = true });
-
-            File.WriteAllText(filePath, json);
-        }
-        //CRUD operations
-        public List<Client> GetAll()
-        {
-            return ReadClients();
+            _clientRepository = clientRepository;
         }
 
-        public Client? GetById(int id)
-        {
-            return ReadClients().FirstOrDefault(c => c.Id == id);
-        }
-        public Client Create(Client client)
-        {
-            var clients = ReadClients();
+        public async Task<IReadOnlyList<Client>> GetAllAsync() =>
+            await _clientRepository.GetAllAsync();
 
-            client.Id = clients.Count == 0 ? 1 : clients.Max(c => c.Id) + 1;
+        public async Task<Client?> GetByIdAsync(string id) =>
+            await _clientRepository.GetByIdAsync(id);
 
-            clients.Add(client);
-            WriteClients(clients);
+        public async Task<Client> CreateAsync(Client client) =>
+            await _clientRepository.CreateAsync(client);
 
-            return client;
-        }
-        public bool Update(int id, Client client)
-        {
-            var clients = ReadClients();
-            int index = clients.FindIndex(c => c.Id == id);
+        public async Task<bool> UpdateAsync(string id, Client client) =>
+            await _clientRepository.ReplaceAsync(id, client);
 
-            if (index == -1)
-                return false;
-
-            client.Id = id;
-            clients[index] = client;
-
-            WriteClients(clients);
-            return true;
-        }
-        public bool Delete(int id)
-        {
-            var clients = ReadClients();
-            var client = clients.FirstOrDefault(c => c.Id == id);
-
-            if (client == null)
-                return false;
-
-            clients.Remove(client);
-            WriteClients(clients);
-
-            return true;
-        }
+        public async Task<bool> DeleteAsync(string id) =>
+            await _clientRepository.DeleteAsync(id);
     }
 }

@@ -5,32 +5,30 @@ namespace MiA_Lr_3.Services.Interface
 {
     public interface ICarContractService
     {
-        List<CarContract> GetAll();
-        CarContract? GetById(int id);
-        CarContract Create(CarContract contract);
-        bool Update(int id, CarContract contract);
-        bool Delete(int id);
+        Task<IReadOnlyList<CarContract>> GetAllAsync();
+        Task<CarContract?> GetByIdAsync(string id);
+        Task<CarContract> CreateAsync(CarContract contract);
+        Task<bool> UpdateAsync(string id, CarContract contract);
+        Task<bool> DeleteAsync(string id);
 
-        // Бізнес логіка
-        // Укладання договору
-        CarContract CreateRental(
-            int clientId,
-            int carId,
+        // Бізнес-задача 1: Оренда
+        Task<CarContract> CreateRentalAsync(
+            string clientId,
+            string carId,
             DateTime plannedEndDate,
             InsuranceType insurance);
-        // Розрахунок вартості
+
+        // Бізнес-задача 2: Розрахунок вартості
         decimal CalculateRentalCost(
-            decimal daikyRate,
+            decimal dailyRate,
             DateTime startDate,
-            DateTime plannedEdDate,
-            InsuranceType insurence);
-        // Повернення автомобіля
-        CarContract ReturnCar(
-            int contractId,
+            DateTime plannedEndDate,
+            InsuranceType insurance);
+
+        // Бізнес-задача 3: Повернення автомобіля
+        Task<CarContract> ReturnCarAsync(
+            string contractId,
             int endMileage,
-            decimal damageCost);
-            
-            
-    
+            decimal damageCost = 0);
     }
 }

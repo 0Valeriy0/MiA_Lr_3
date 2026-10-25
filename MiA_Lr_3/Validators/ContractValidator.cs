@@ -9,12 +9,11 @@ namespace MiA_Lr_3.Validators
         public ContractValidator()
         {
             RuleFor(contract => contract.ClientId)
-                .GreaterThan(0)
-                .WithMessage("Вкажіть коректний ідентифікатор клієнта");
-
+                .NotEmpty()
+                .WithMessage("Ідентифікатор клієнта є обов'язковим");
             RuleFor(contract => contract.CarId)
-                .GreaterThan(0)
-                .WithMessage("Вкажіть коректний ідентифікатор автомобіля");
+                .NotEmpty()
+                .WithMessage("Ідентифікатор автомобіля є обов'язковим");
 
             RuleFor(contract => contract.StartDate)
                 .Must(date => date != DateTime.MinValue)

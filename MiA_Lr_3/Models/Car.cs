@@ -1,11 +1,10 @@
-﻿
 using MiA_Lr_3.Models.Enum;
 
 namespace MiA_Lr_3.Models
 {
     public class Car
     {
-        public int Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         public string Brand { get; set; } = string.Empty;
 

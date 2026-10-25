@@ -1,5 +1,8 @@
 using FluentValidation;
-using MiA_Lr_3.Models;
+using FluentValidation.AspNetCore;
+using MiA_Lr_3.Mappings;
+using MiA_Lr_3.Repositories;
+using MiA_Lr_3.Repositories.Interface;
 using MiA_Lr_3.Services;
 using MiA_Lr_3.Services.Interface;
 using MiA_Lr_3.Validators;
@@ -7,7 +10,9 @@ using MiA_Lr_3.Validators;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddFluentValidation();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -16,10 +21,17 @@ builder.Services.AddSwaggerGen();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-// Реєстрація валідаторів
-builder.Services.AddScoped<IValidator<Car>, CarValidator>();
-builder.Services.AddScoped<IValidator<CarContract>, ContractValidator>();
+// Реєструємо всі валідатори автоматично
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCarDtoValidator>();
 
+// 1. Реєструємо репозиторії MongoDB
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<ICarRepository, CarRepository>();
+builder.Services.AddScoped<ICarContractRepository, CarContractRepository>();
+// Реєстрація AutoMapper
+builder.Services.AddAutoMapper(cfg =>{cfg.AddProfile<MappingProfile>();});
+/* builder.Services.AddAutoMapper(typeof(UserProfile));  
+ * Не працює?*/
 
 // Реєстрація сервісів
 builder.Services.AddScoped<IClientService, ClientService>();

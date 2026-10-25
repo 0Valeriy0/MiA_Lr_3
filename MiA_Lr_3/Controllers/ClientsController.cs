@@ -18,16 +18,16 @@ namespace MiA_Lr_3.Controllers
 
         // GET: api/clients
         [HttpGet]
-        public ActionResult<List<Client>> GetAll()
+        public async Task<ActionResult<List<Client>>> GetAll()
         {
-            return Ok(_clientService.GetAll());
+            return Ok(await _clientService.GetAllAsync());
         }
 
         // GET: api/clients/1
-        [HttpGet("{id:int}")]
-        public ActionResult<Client> GetById(int id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Client>> GetById(string id)
         {
-            var client = _clientService.GetById(id);
+            var client = await _clientService.GetByIdAsync(id);
 
             if (client == null)
                 return NotFound();
@@ -37,9 +37,9 @@ namespace MiA_Lr_3.Controllers
 
         // POST: api/clients
         [HttpPost]
-        public ActionResult<Client> Create(Client client)
+        public async Task<ActionResult<Client>> Create(Client client)
         {
-            var createdClient = _clientService.Create(client);
+            var createdClient = await _clientService.CreateAsync(client);
 
             return CreatedAtAction(
                 nameof(GetById),
@@ -48,20 +48,20 @@ namespace MiA_Lr_3.Controllers
         }
 
         // PUT: api/clients/1
-        [HttpPut("{id:int}")]
-        public IActionResult Update(int id, Client client)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, Client client)
         {
-            if (!_clientService.Update(id, client))
+            if (!await _clientService.UpdateAsync(id, client))
                 return NotFound();
 
             return NoContent();
         }
 
         // DELETE: api/clients/1
-        [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
         {
-            if (!_clientService.Delete(id))
+            if (!await _clientService.DeleteAsync(id))
                 return NotFound();
 
             return NoContent();

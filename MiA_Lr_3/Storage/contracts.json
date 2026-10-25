@@ -15,5 +15,22 @@
     "DamageCost": 0,
     "ExtraMileageCharge": 0,
     "DepositRefund": 10000
+  },
+  {
+    "Id": 2,
+    "ClientId": 0,
+    "CarId": 0,
+    "StartDate": "2026-10-15T10:45:09.312Z",
+    "PlannedEndDate": "2026-10-15T10:45:09.312Z",
+    "ActualEndDate": "2026-10-15T10:45:09.312Z",
+    "Insurance": 0,
+    "Status": 1,
+    "DepositAmount": 0,
+    "TotalCost": 0,
+    "StartMileage": 0,
+    "EndMileage": 0,
+    "DamageCost": 0,
+    "ExtraMileageCharge": 0,
+    "DepositRefund": 0
   }
 ]

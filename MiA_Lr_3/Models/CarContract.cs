@@ -1,13 +1,13 @@
-﻿
+
 using MiA_Lr_3.Models.Enum;
 
 namespace MiA_Lr_3.Models
 {
     public class CarContract
     {
-        public int Id { get; set; }
-        public int ClientId { get; set; }
-        public int CarId { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string ClientId { get; set; } = string.Empty;
+        public string CarId { get; set; } = string.Empty;
         public DateTime StartDate { get; set; }
         public DateTime PlannedEndDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
@@ -23,4 +23,3 @@ namespace MiA_Lr_3.Models
         public decimal DepositRefund { get; set; }
     }
 }
-
