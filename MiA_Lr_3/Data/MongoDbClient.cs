@@ -1,25 +1,32 @@
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
-namespace MiA_Lr_3.Data;
-
-public class MongoDbClient
+namespace MiA_Lr_3.Data
 {
-    private static IMongoDatabase _db = null!;
-    private static MongoDbClient? _instance;
-
-    public static MongoDbClient Instance
+    public class MongoDbClient
     {
-        get => _instance ??= new MongoDbClient();
-    }
-    private MongoDbClient()
-    {
-        // Рядок підключення до локального сервера MongoDB
-        var connectionString = "mongodb+srv://gavronskiyvaleriy2008_db_user:5H11JeWbDIWeYgNx@myclaster.zxkv64t.mongodb.net";
-        var client = new MongoClient(connectionString);
+        private static IMongoDatabase _db = null!;
+        private static MongoDbClient? _instance;
 
-        // Назва бази даних для проекту
-        _db = client.GetDatabase("CarRentalDb");
+        public static MongoDbClient Instance => _instance ??= new MongoDbClient();
+
+        private MongoDbClient()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            // Зчитуємо тільки з файлу appsettings.json.
+            var connectionString = config["MongoDbSettings:ConnectionString"]
+                ?? throw new InvalidOperationException("Рядок підключення 'MongoDbSettings:ConnectionString' не знайдено в appsettings.json");
+
+            var databaseName = config["MongoDbSettings:DatabaseName"] ?? "CarRentalDb";
+
+            var client = new MongoClient(connectionString);
+            _db = client.GetDatabase(databaseName);
+        }
+
+        public IMongoCollection<T> GetCollection<T>(string name) => _db.GetCollection<T>(name);
     }
-    // Метод отримання потрібної колекції (таблиці)
-    public IMongoCollection<T> GetCollection<T>(string name) => _db.GetCollection<T>(name);
 }

@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
 using MiA_Lr_3.DTOs.Cars;
 using MiA_Lr_3.Models;
 using MiA_Lr_3.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MiA_Lr_3.Controllers
 {
@@ -39,8 +40,9 @@ namespace MiA_Lr_3.Controllers
             return Ok(_mapper.Map<CarResponseDto>(car));
         }
 
-        // POST: api/cars
+        // POST: api/car (тільки адмін додає нові машини в автопарк)
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CarResponseDto>> Create([FromBody] CreateCarDto dto)
         {
             var car = _mapper.Map<Car>(dto);
@@ -51,10 +53,12 @@ namespace MiA_Lr_3.Controllers
                 nameof(GetById),
                 new { id = createdCar.Id },
                 _mapper.Map<CarResponseDto>(createdCar));
+
         }
 
-        // PUT: api/cars/
+        // PUT: api/car/{id} (тільки адмін оновлює тариф чи статус)
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(string id, [FromBody] UpdateCarDto dto)
         {
             var existingCar = await _carService.GetByIdAsync(id);
@@ -66,8 +70,9 @@ namespace MiA_Lr_3.Controllers
             return NoContent();
         }
 
-        // DELETE: api/cars/1
+        // DELETE: api/car/{id} (тільки адмін списує авто)
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string id)
         {
             if (!await _carService.DeleteAsync(id))

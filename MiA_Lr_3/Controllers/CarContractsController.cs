@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
 using MiA_Lr_3.Dtos.Contracts;
 using MiA_Lr_3.DTOs.Contracts;
 using MiA_Lr_3.Models.Enum;
 using MiA_Lr_3.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MiA_Lr_3.Controllers
 {
@@ -19,9 +20,9 @@ namespace MiA_Lr_3.Controllers
             _contractService = contractService;
             _mapper = mapper;
         }
-
-        // GET: api/carcontracts
+        // GET: api/carcontracts (тільки адмін переглядає всю базу договорів)
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IReadOnlyList<ContractResponseDto>>> GetAll()
         {
             var contracts = await _contractService.GetAllAsync();
@@ -41,6 +42,7 @@ namespace MiA_Lr_3.Controllers
 
         // DELETE: api/carcontracts/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string id)
         {
             if (!await _contractService.DeleteAsync(id))
@@ -64,8 +66,9 @@ namespace MiA_Lr_3.Controllers
             }
         }
 
-        // POST: api/carcontracts/rent (Бізнес-задача 1: Створення договору та оренда)
+        // POST: api/carcontracts/rent (орендувати авто може будь-який зареєстрований користувач)
         [HttpPost("rent")]
+        [Authorize]
         public async Task<ActionResult<ContractResponseDto>> RentCar([FromBody] RentCarRequestDto dto)
         {
             try
@@ -93,8 +96,9 @@ namespace MiA_Lr_3.Controllers
             }
         }
 
-        // POST: api/carcontracts/{id}/return (Бізнес-задача 3: Повернення автомобіля)
+        // POST: api/carcontracts/{id}/return (приймати авто і перевіряти пошкодження/пробіг може тільки менеджер/адмін)
         [HttpPost("{id}/return")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ContractResponseDto>> ReturnCar(string id, [FromBody] ReturnCarRequestDto dto)
         {
             try

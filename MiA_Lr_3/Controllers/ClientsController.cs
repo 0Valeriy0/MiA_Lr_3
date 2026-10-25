@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using MiA_Lr_3.DTOs.Clients;
 using MiA_Lr_3.Dtos.Clients;
-using Microsoft.AspNetCore.Mvc;
+using MiA_Lr_3.DTOs.Clients;
 using MiA_Lr_3.Models;
 using MiA_Lr_3.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MiA_Lr_3.Controllers
 {
@@ -20,8 +21,9 @@ namespace MiA_Lr_3.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/clients
+        // GET: api/clients (перегляд персональних даних клієнтів — тільки адмін)
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<ClientResponseDto>>> GetAll()
         {
             var clients = await _clientService.GetAllAsync();
@@ -67,8 +69,9 @@ namespace MiA_Lr_3.Controllers
             return NoContent();
         }
 
-        // DELETE: api/clients/1
+        // DELETE: api/clients/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string id)
         {
             if (!await _clientService.DeleteAsync(id))
