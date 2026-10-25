@@ -39,6 +39,7 @@ namespace MiA_Lr_3.Validators
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("Пробіг не може бути від'ємним");
         }
+    }
         public class UpdateCarDtoValidator : AbstractValidator<UpdateCarDto>
         {
             public UpdateCarDtoValidator()
@@ -56,5 +57,5 @@ namespace MiA_Lr_3.Validators
                     .WithMessage("Пробіг не може бути від'ємним");
             }
         }
-    }
 }
+

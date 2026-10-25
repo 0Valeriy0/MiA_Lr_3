@@ -1,8 +1,9 @@
-﻿using FluentValidation;
-using MiA_Lr_3.Models;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using MiA_Lr_3.Dtos.Contracts;
+using MiA_Lr_3.DTOs.Contracts;
 using MiA_Lr_3.Models.Enum;
 using MiA_Lr_3.Services.Interface;
-using Microsoft.AspNetCore.Mvc;
 
 namespace MiA_Lr_3.Controllers
 {
@@ -11,55 +12,34 @@ namespace MiA_Lr_3.Controllers
     public class CarContractsController : ControllerBase
     {
         private readonly ICarContractService _contractService;
+        private readonly IMapper _mapper;
 
-        public CarContractsController(
-            ICarContractService contractService)
+        public CarContractsController(ICarContractService contractService, IMapper mapper)
         {
             _contractService = contractService;
+            _mapper = mapper;
         }
 
         // GET: api/carcontracts
         [HttpGet]
-        public async Task<ActionResult<List<CarContract>>> GetAll()
+        public async Task<ActionResult<IReadOnlyList<ContractResponseDto>>> GetAll()
         {
-            return Ok(await _contractService.GetAllAsync());
+            var contracts = await _contractService.GetAllAsync();
+            return Ok(_mapper.Map<IReadOnlyList<ContractResponseDto>>(contracts));
         }
 
-        // GET: api/carcontracts/
+        // GET: api/carcontracts/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<CarContract>> GetById(string id)
+        public async Task<ActionResult<ContractResponseDto>> GetById(string id)
         {
             var contract = await _contractService.GetByIdAsync(id);
-
             if (contract == null)
                 return NotFound();
 
-            return Ok(contract);
+            return Ok(_mapper.Map<ContractResponseDto>(contract));
         }
 
-        // POST: api/carcontracts
-        [HttpPost]
-        public async Task<ActionResult<CarContract>> Create([FromBody]CarContract contract)
-        {   
-
-
-            var createdContract = await _contractService.CreateAsync(contract);
-
-            return CreatedAtAction( nameof(GetById),  new { id = createdContract.Id }, createdContract);
-        }
-
-        // PUT: api/carcontracts/
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, CarContract contract)
-        { 
-
-            if (!await _contractService.UpdateAsync(id, contract))
-                return NotFound();
-
-            return NoContent();
-        }
-
-        // DELETE: api/carcontracts/
+        // DELETE: api/carcontracts/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
@@ -69,14 +49,13 @@ namespace MiA_Lr_3.Controllers
             return NoContent();
         }
 
-
-        // POST: api/carcontracts/calculate-cost (Бізнес-задача 2)
+        // POST: api/carcontracts/calculate-cost (Бізнес-задача 2: Розрахунок вартості)
         [HttpPost("calculate-cost")]
-        public  ActionResult<decimal> CalculateCost(decimal dailyRate, DateTime startDate, DateTime plannedEndDate, InsuranceType insurance)
+        public ActionResult<decimal> CalculateCost(decimal dailyRate, DateTime startDate, DateTime plannedEndDate, InsuranceType insurance)
         {
             try
             {
-                var cost =  _contractService.CalculateRentalCost(dailyRate, startDate, plannedEndDate, insurance);
+                var cost = _contractService.CalculateRentalCost(dailyRate, startDate, plannedEndDate, insurance);
                 return Ok(new { TotalCost = cost });
             }
             catch (ArgumentException ex)
@@ -84,14 +63,25 @@ namespace MiA_Lr_3.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
-        // POST: api/carcontracts/rent (Бізнес-задача 1)
+
+        // POST: api/carcontracts/rent (Бізнес-задача 1: Створення договору та оренда)
         [HttpPost("rent")]
-        public async Task<ActionResult<CarContract>> RentCar(string clientId, string carId, DateTime plannedEndDate, InsuranceType insurance)
+        public async Task<ActionResult<ContractResponseDto>> RentCar([FromBody] RentCarRequestDto dto)
         {
             try
             {
-                var contract = await _contractService.CreateRentalAsync(clientId, carId, plannedEndDate, insurance);
-                return CreatedAtAction(nameof(GetById), new { id = contract.Id }, contract);
+                var contract = await _contractService.CreateRentalAsync(
+                    dto.ClientId,
+                    dto.CarId,
+                    dto.PlannedEndDate,
+                    dto.Insurance);
+
+                var response = _mapper.Map<ContractResponseDto>(contract);
+
+                return CreatedAtAction(
+                    nameof(GetById),
+                    new { id = response.Id },
+                    response);
             }
             catch (ArgumentException ex)
             {
@@ -102,14 +92,15 @@ namespace MiA_Lr_3.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
-        // POST: api/carcontracts/1/return (Бізнес-задача 3)
-        [HttpPost("{id:int}/return")]
-        public async Task<ActionResult<CarContract>> ReturnCar(string id, int endMileage, decimal damageCost = 0)
+
+        // POST: api/carcontracts/{id}/return (Бізнес-задача 3: Повернення автомобіля)
+        [HttpPost("{id}/return")]
+        public async Task<ActionResult<ContractResponseDto>> ReturnCar(string id, [FromBody] ReturnCarRequestDto dto)
         {
             try
             {
-                var contract = await _contractService.ReturnCarAsync(id, endMileage, damageCost);
-                return Ok(contract);
+                var contract = await _contractService.ReturnCarAsync(id, dto.EndMileage, dto.DamageCost);
+                return Ok(_mapper.Map<ContractResponseDto>(contract));
             }
             catch (ArgumentException ex)
             {
@@ -120,6 +111,5 @@ namespace MiA_Lr_3.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
-
     }
 }

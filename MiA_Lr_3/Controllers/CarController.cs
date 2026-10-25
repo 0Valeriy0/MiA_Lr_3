@@ -1,5 +1,6 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using MiA_Lr_3.DTOs.Cars;
 using MiA_Lr_3.Models;
 using MiA_Lr_3.Services.Interface;
 
@@ -10,49 +11,58 @@ namespace MiA_Lr_3.Controllers
     public class CarController : ControllerBase
     {
         private readonly ICarService _carService;
+        private readonly IMapper _mapper;
 
-        public CarController(
-            ICarService carService)
+        public CarController( ICarService carService, IMapper mapper)
         {
             _carService = carService;
+            _mapper = mapper;
         }
 
-        // GET: api/cars
+        // GET: api/car
         [HttpGet]
-        public async  Task<ActionResult<List<Car>>> GetAll() => Ok(await _carService.GetAllAsync());
+        public async Task<ActionResult<IReadOnlyList<CarResponseDto>>> GetAll()
+        {
+            var cars = await _carService.GetAllAsync();
+            return Ok(_mapper.Map<IReadOnlyList<CarResponseDto>>(cars));
+        }
 
         // GET: api/cars/
         [HttpGet("{id}")]
-        public async Task<ActionResult<Car>> GetById(string id)
+        public async Task<ActionResult<CarResponseDto>> GetById(string id)
         {
             var car = await _carService.GetByIdAsync(id);
 
             if (car == null)
                 return NotFound();
 
-            return Ok(car);
+            return Ok(_mapper.Map<CarResponseDto>(car));
         }
 
         // POST: api/cars
         [HttpPost]
-        public async Task<ActionResult<Car>> Create(Car car)
+        public async Task<ActionResult<CarResponseDto>> Create([FromBody] CreateCarDto dto)
         {
+            var car = _mapper.Map<Car>(dto);
             var createdCar = await _carService.CreateAsync(car);
+              var response = _mapper.Map<CarResponseDto>(createdCar);
 
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = createdCar.Id },
-                createdCar);
+                _mapper.Map<CarResponseDto>(createdCar));
         }
 
         // PUT: api/cars/
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, Car car)
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateCarDto dto)
         {
-
-            if (!await _carService.UpdateAsync(id, car))
+            var existingCar = await _carService.GetByIdAsync(id);
+            if (existingCar == null)
                 return NotFound();
-
+            // Оновлюємо тільки змінені поля з DTO
+            _mapper.Map(dto, existingCar);
+            await _carService.UpdateAsync(id, existingCar);
             return NoContent();
         }
 
