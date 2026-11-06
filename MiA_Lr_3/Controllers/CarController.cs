@@ -9,6 +9,7 @@ namespace MiA_Lr_3.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CarController : ControllerBase
     {
         private readonly ICarService _carService;
