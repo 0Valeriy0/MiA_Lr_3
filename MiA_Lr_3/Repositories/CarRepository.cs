@@ -7,12 +7,10 @@ using AutoMapper;
 
 namespace MiA_Lr_3.Repositories;
 
-public class CarRepository(
-    IMapper _mapper
-) : ICarRepository
+public class CarRepository( IMapper _mapper, IMongoDatabase database) : ICarRepository
 {
     private readonly IMongoCollection<CarDocument> _collection =
-        MongoDbClient.Instance.GetCollection<CarDocument>("cars");
+        database.GetCollection<CarDocument>("cars");
 
     public async Task<IReadOnlyList<Car>> GetAllAsync()
     {

@@ -1,3 +1,17 @@
 <Solution>
+  <Folder Name="/Lr5_Task1/">
+    <Project Path="PasswordStrengthApp.Tests/PasswordStrengthApp.Tests.csproj" />
+    <Project Path="PasswordStrengthApp/PasswordStrengthApp.csproj" />
+  </Folder>
+  <Folder Name="/Lr5_Task2/">
+    <Project Path="CarRental_Test/CarRental.Test.csproj" Id="5b809393-bd2f-4815-8791-81230894e8c3" />
+  </Folder>
+  <Folder Name="/Lr5_Task3/">
+    <Project Path="RectangleApp/RectangleApp.csproj" Id="12626eca-9d14-4da9-a0db-ce94a53361e5" />
+    <Project Path="RectangleApp_Tests/RectangleApp.Tests.csproj" Id="c3021251-e2cb-4bbb-9c62-d71b5ddc6114" />
+  </Folder>
+  <Folder Name="/Lr5_Task4/">
+    <Project Path="CarRental.IntegrationTests/CarRental.IntegrationTests.csproj" />
+  </Folder>
   <Project Path="MiA_Lr_3/MiA_Lr_3.csproj" />
 </Solution>

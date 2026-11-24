@@ -6,10 +6,10 @@ using MiA_Lr_3.Repositories.Interface;
 
 namespace MiA_Lr_3.Repositories
 {
-    public class ClientRepository : IClientRepository
+    public class ClientRepository(IMongoDatabase database) : IClientRepository
     {
         private readonly IMongoCollection<ClientDocument> _collection =
-            MongoDbClient.Instance.GetCollection<ClientDocument>("clients");
+            database.GetCollection<ClientDocument>("clients");
         public async Task<IReadOnlyList<Client>> GetAllAsync()
         {
             var documents = await _collection.Find(_ => true).ToListAsync();

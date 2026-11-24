@@ -203,5 +203,54 @@ namespace MiA_Lr_3.Services
 
             return contract;
         }
+
+        // ===================== ЛР5: агрегації над колекціями (LINQ) =====================
+
+        // Агрегація 1: дохід за період (закриті договори: вартість оренди + доплата за пробіг)
+        public async Task<decimal> GetTotalRevenueAsync(DateTime from, DateTime to)
+        {
+            if (from > to)
+                throw new ArgumentException("Початок періоду не може бути пізніше за кінець.");
+
+            var contracts = await _contractRepository.GetAllAsync();
+
+            return contracts
+                .Where(c => c.Status == ContractStatus.Closed
+                         && c.ActualEndDate >= from
+                         && c.ActualEndDate <= to)
+                .Sum(c => c.TotalCost + c.ExtraMileageCharge);
+        }
+
+        // Агрегація 2: середня вартість оренди; для порожньої колекції — 0
+        public async Task<decimal> GetAverageRentalCostAsync()
+        {
+            var contracts = await _contractRepository.GetAllAsync();
+
+            if (contracts.Count == 0)
+                return 0m;
+
+            return Math.Round(contracts.Average(c => c.TotalCost), 2);
+        }
+
+        // Агрегація 3: найдорожчий договір; для порожньої колекції — null
+        public async Task<CarContract?> GetMostExpensiveContractAsync()
+        {
+            var contracts = await _contractRepository.GetAllAsync();
+            return contracts.MaxBy(c => c.TotalCost);
+        }
+
+        // Агрегація 4: кількість активних договорів клієнта (з валідацією)
+        public async Task<int> CountActiveContractsByClientAsync(string clientId)
+        {
+            if (string.IsNullOrWhiteSpace(clientId))
+                throw new ArgumentException("Не вказано ідентифікатор клієнта.", nameof(clientId));
+
+            var client = await _clientService.GetByIdAsync(clientId);
+            if (client == null)
+                throw new KeyNotFoundException("Клієнта не знайдено.");
+
+            var contracts = await _contractRepository.GetAllAsync();
+            return contracts.Count(c => c.ClientId == clientId && c.Status == ContractStatus.Active);
+        }
     }
 }

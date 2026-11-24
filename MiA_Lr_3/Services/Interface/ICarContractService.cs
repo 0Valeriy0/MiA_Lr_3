@@ -30,5 +30,11 @@ namespace MiA_Lr_3.Services.Interface
             string contractId,
             int endMileage,
             decimal damageCost = 0);
+
+        // ЛР5: агрегації над колекціями даних (LINQ)
+        Task<decimal> GetTotalRevenueAsync(DateTime from, DateTime to);
+        Task<decimal> GetAverageRentalCostAsync();
+        Task<CarContract?> GetMostExpensiveContractAsync();
+        Task<int> CountActiveContractsByClientAsync(string clientId);
     }
 }

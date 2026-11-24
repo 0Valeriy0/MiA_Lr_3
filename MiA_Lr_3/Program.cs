@@ -60,6 +60,11 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("Mo
 builder.Services.AddSingleton<IMongoClient>(sp =>
     new MongoClient(builder.Configuration["MongoDbSettings:ConnectionString"]));
 
+// База даних через DI
+builder.Services.AddSingleton<IMongoDatabase>(sp =>
+    sp.GetRequiredService<IMongoClient>()
+      .GetDatabase(builder.Configuration["MongoDbSettings:DatabaseName"]));
+
 // 4. Реєстрація AutoMapper
 
 builder.Services.AddAutoMapper(cfg =>
@@ -110,9 +115,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Порядок важливий: спершу автентифікація, потім авторизація!
+// Порядок важливий: спершу автентифікація, потім авторизація
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+public partial class Program { }

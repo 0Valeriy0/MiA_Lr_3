@@ -6,10 +6,10 @@ using MiA_Lr_3.Repositories.Interface;
 
 namespace MiA_Lr_3.Repositories;
 
-public class CarContractRepository : ICarContractRepository
+public class CarContractRepository(IMongoDatabase database) : ICarContractRepository
 {
     private readonly IMongoCollection<CarContractDocument> _collection =
-        MongoDbClient.Instance.GetCollection<CarContractDocument>("contracts");
+        database.GetCollection<CarContractDocument>("contracts");
 
     public async Task<IReadOnlyList<CarContract>> GetAllAsync()
     {

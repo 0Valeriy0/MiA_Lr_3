@@ -10,9 +10,9 @@ namespace MiA_Lr_3.Repositories
     {
         private readonly IMongoCollection<UserDocument> _users;
 
-        public UserRepository()
+        public UserRepository(IMongoDatabase database)
         {
-            _users = MongoDbClient.Instance.GetCollection<UserDocument>("users");
+            _users = database.GetCollection<UserDocument>("users");
         }
 
         public async Task<User?> GetByIdAsync(string id)
