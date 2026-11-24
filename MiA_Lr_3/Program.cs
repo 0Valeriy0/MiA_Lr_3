@@ -1,4 +1,4 @@
-using FluentValidation;
+п»їusing FluentValidation;
 using FluentValidation.AspNetCore;
 using MiA_Lr_3.Mappings;
 using MiA_Lr_3.Repositories;
@@ -16,14 +16,14 @@ var builder = WebApplication.CreateBuilder(args);
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 builder.WebHost.ConfigureKestrel(options => options.ListenAnyIP(int.Parse(port)));
 
-// 1. Контролери та валідація
+// 1. РљРѕРЅС‚СЂРѕР»РµСЂРё С‚Р° РІР°Р»С–РґР°С†С–СЏ
 builder.Services
     .AddControllers()
     .AddFluentValidation();
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateCarDtoValidator>();
 
-// 2. Swagger з підтримкою JWT (кнопка Authorize)
+// 2. Swagger Р· РїС–РґС‚СЂРёРјРєРѕСЋ JWT (РєРЅРѕРїРєР° Authorize)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -31,9 +31,9 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Car Rental API",
         Version = "v1",
-        Description = "Трирівнева архітектура RESTful API з JWT-авторизацією"
+        Description = "РўСЂРёСЂС–РІРЅРµРІР° Р°СЂС…С–С‚РµРєС‚СѓСЂР° RESTful API Р· JWT-Р°РІС‚РѕСЂРёР·Р°С†С–С”СЋ"
     });
-    // Додаємо опис Bearer-схеми
+    // Р”РѕРґР°С”РјРѕ РѕРїРёСЃ Bearer-СЃС…РµРјРё
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -41,7 +41,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Вставте ваш JWT токен сюди (слово 'Bearer' додавати не потрібно):"
+        Description = "Р’СЃС‚Р°РІС‚Рµ РІР°С€ JWT С‚РѕРєРµРЅ СЃСЋРґРё (СЃР»РѕРІРѕ 'Bearer' РґРѕРґР°РІР°С‚Рё РЅРµ РїРѕС‚СЂС–Р±РЅРѕ):"
     });
     options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
@@ -53,7 +53,7 @@ builder.Services.AddSwaggerGen(options =>
 
 });
 
-// 3. Реєстрація репозиторіїв MongoDB
+// 3. Р РµС”СЃС‚СЂР°С†С–СЏ СЂРµРїРѕР·РёС‚РѕСЂС–С—РІ MongoDB
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<ICarRepository, CarRepository>();
 builder.Services.AddScoped<ICarContractRepository, CarContractRepository>();
@@ -62,26 +62,26 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("Mo
 builder.Services.AddSingleton<IMongoClient>(sp =>
     new MongoClient(builder.Configuration["MongoDbSettings:ConnectionString"]));
 
-// База даних через DI
+// Р‘Р°Р·Р° РґР°РЅРёС… С‡РµСЂРµР· DI
 builder.Services.AddSingleton<IMongoDatabase>(sp =>
     sp.GetRequiredService<IMongoClient>()
       .GetDatabase(builder.Configuration["MongoDbSettings:DatabaseName"]));
 
-// 4. Реєстрація AutoMapper
+// 4. Р РµС”СЃС‚СЂР°С†С–СЏ AutoMapper
 
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MappingProfile>();
 });
 
-// 5. Реєстрація сервісів бізнес-логіки та токенів
+// 5. Р РµС”СЃС‚СЂР°С†С–СЏ СЃРµСЂРІС–СЃС–РІ Р±С–Р·РЅРµСЃ-Р»РѕРіС–РєРё С‚Р° С‚РѕРєРµРЅС–РІ
 
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<ICarContractService, CarContractService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-// 6. Налаштування JWT Автентифікації
+// 6. РќР°Р»Р°С€С‚СѓРІР°РЅРЅСЏ JWT РђРІС‚РµРЅС‚РёС„С–РєР°С†С–С—
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"]!;
@@ -103,7 +103,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-        ClockSkew = TimeSpan.Zero // Без додаткової затримки терміну дії
+        ClockSkew = TimeSpan.Zero // Р‘РµР· РґРѕРґР°С‚РєРѕРІРѕС— Р·Р°С‚СЂРёРјРєРё С‚РµСЂРјС–РЅСѓ РґС–С—
     };
 });
 builder.Services.AddAuthorization();
@@ -114,7 +114,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// Порядок важливий: спершу автентифікація, потім авторизація
+// РџРѕСЂСЏРґРѕРє РІР°Р¶Р»РёРІРёР№: СЃРїРµСЂС€Сѓ Р°РІС‚РµРЅС‚РёС„С–РєР°С†С–СЏ, РїРѕС‚С–Рј Р°РІС‚РѕСЂРёР·Р°С†С–СЏ
 
 app.UseAuthentication();
 app.UseAuthorization();
