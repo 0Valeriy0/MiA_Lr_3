@@ -10,7 +10,7 @@ namespace RectangleApp.Tests
         private readonly RectangleService _service = new();
 
         [Theory]
-        [InlineData(5, 3, 16)] // Arrange: вхідні дані та очікуваний результат
+        [InlineData(5, 3, 15)] // Arrange: вхідні дані та очікуваний результат
         [InlineData(2.5, 4, 10)]
         [InlineData(1, 1, 1)]
         public void GetArea_ValidSides_ReturnsProduct(double width, double height, double expected)
