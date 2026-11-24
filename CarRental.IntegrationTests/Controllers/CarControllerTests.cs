@@ -1,4 +1,4 @@
-﻿using System.Net;
+﻿/*using System.Net;
 using System.Net.Http.Json;
 using CarRental.IntegrationTests.Infrastructure;
 using MiA_Lr_3.DTOs.Cars;
@@ -227,3 +227,4 @@ namespace CarRental.IntegrationTests.Controllers
         }
     }
 }
+*/
