@@ -13,6 +13,8 @@ using System.Text;
 using MongoDB.Driver;
 using MiA_Lr_3.Data;
 var builder = WebApplication.CreateBuilder(args);
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+builder.WebHost.ConfigureKestrel(options => options.ListenAnyIP(int.Parse(port)));
 
 // 1. Контролери та валідація
 builder.Services
@@ -109,11 +111,8 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // Порядок важливий: спершу автентифікація, потім авторизація
 
